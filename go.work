@@ -1,0 +1,10 @@
+go 1.21
+
+use (
+	./dry
+	./dry-config
+	./dry-nexus-download
+	./dry-nexus-upload
+)
+
+replace github.com/yunarta/dry-tools/dry-config v1.0.0 => ./dry-config

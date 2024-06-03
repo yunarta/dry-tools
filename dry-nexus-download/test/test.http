@@ -1,0 +1,18 @@
+@q = ephemeral-bamboo-agent%2Fframework-bundles%2Fatlassian-plugins-osgi-bridge-7.5.3.jar
+@artifacts = artifacts
+@format =raw
+
+
+### GET request to example server
+GET https://nexus.mobilesolutionworks.com/service/rest/v1/search/assets/download?q={{q}}&repository={{artifacts}}&
+    format={{format}}
+###
+
+### GET request to example server
+GET https://nexus.mobilesolutionworks.com/service/rest/v1/search/assets?q={{q}}&repository={{artifacts}}&
+    format={{format}}
+
+###
+
+GET https://nexus.mobilesolutionworks.com/service/rest/v1/search/assets?q=terraform&repository=files
+

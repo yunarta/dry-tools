@@ -1,0 +1,35 @@
+name: build
+
+on: [ push ]
+
+jobs:
+  build:
+    runs-on: oraclelinux-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: ~/go
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: ${{ runner.os }}-go-
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.21
+
+      - name: Install GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          install-only: true
+
+      - name: Build
+        run: |
+          cd dry && goreleaser release --skip=publish --snapshot 
+
+      - name: Build
+        run: |
+          cd dry-nexus-download && goreleaser release --skip=publish --snapshot
