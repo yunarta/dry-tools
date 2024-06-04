@@ -1,1 +1,1 @@
-# kyx-config
+# dry-config

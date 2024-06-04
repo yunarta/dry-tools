@@ -99,7 +99,7 @@ func NewCmd() *NexusUpload {
 	var cmd = NexusUpload{}
 
 	var rootCmd = &cobra.Command{
-		Use: "kyx nexus upload [src] [dst]",
+		Use: "dry nexus upload [src] [dst]",
 		Run: cmd.Run,
 	}
 

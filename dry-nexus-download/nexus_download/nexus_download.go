@@ -138,7 +138,7 @@ func NewCmd() *NexusDownload {
 	var cmd = NexusDownload{}
 
 	var rootCmd = &cobra.Command{
-		Use: "kyx nexus download [src] [dst]",
+		Use: "dry nexus download [src] [dst]",
 		Run: cmd.Run,
 	}
 

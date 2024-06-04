@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestKyxConfig_Resolve(t *testing.T) {
+func TestDryConfig_Resolve(t *testing.T) {
 	config, err := LoadConfig()
 	if err != nil {
 		t.Fatalf("failed to load config: %v", err)
