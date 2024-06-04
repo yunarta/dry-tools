@@ -13,8 +13,10 @@ import (
 
 // NexusDownload struct to hold service name and root command
 type NexusDownload struct {
-	service string
-	rootCmd *cobra.Command
+	username string
+	password string
+	service  string
+	rootCmd  *cobra.Command
 }
 
 // Execute method to start the root command
@@ -48,15 +50,24 @@ func (n *NexusDownload) run(cmd *cobra.Command, args []string) error {
 			log.Println("Error loading config:", err)
 			return fmt.Errorf("failed when loading config: %w", err)
 		}
-		// resolve nexus service from the configuration file
-		resolve, err := config.Resolve("nexus", n.service)
-		if err != nil {
-			log.Println("Error resolving config:", err)
-			return fmt.Errorf("failed when resolving config: %w", err)
-		}
 
-		username := resolve["username"]
-		password := resolve["password"]
+		var username, password string
+		// if n.username and n.password is not null
+		if n.username != "" && n.password != "" {
+			username = n.username
+			password = n.password
+		} else {
+			// Resolving configuration for given service
+			resolve, err := config.Resolve("nexus", n.service)
+			if err != nil {
+				log.Println("Error resolving config:", err)
+				return err
+			}
+
+			// Extracting username and password from configuration
+			username = resolve["username"]
+			password = resolve["password"]
+		}
 
 		src := args[0]
 		dest := args[1]

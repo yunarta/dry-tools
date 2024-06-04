@@ -47,16 +47,32 @@ func (k *DryConfig) Resolve(service, name string) (map[string]string, error) {
 
 	// if any of the string start with _
 	if hasFunctionalKey(section.KeyStrings()) {
-		return nil, nil
+		return processFunctionalKey(section.KeysHash())
 	} else {
 		kv := section.KeysHash()
 		return kv, nil
 	}
 }
 
+func processFunctionalKey(params map[string]string) (map[string]string, error) {
+	// first we convert all $ key and get the environment variables from it
+	for key, value := range params {
+		if strings.HasPrefix(key, "$") {
+			if strings.HasPrefix(value, "$") {
+				params[key[1:]] = os.Getenv(value[1:])
+			} else {
+				params[key[1:]] = value
+			}
+			delete(params, key)
+		}
+	}
+
+	return params, nil
+}
+
 func hasFunctionalKey(keys []string) bool {
 	for _, key := range keys {
-		if strings.HasPrefix(key, "_") {
+		if strings.HasPrefix(key, "_") || strings.HasPrefix(key, "$") {
 			return true
 		}
 	}

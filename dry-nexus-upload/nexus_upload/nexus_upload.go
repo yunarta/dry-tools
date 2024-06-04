@@ -12,9 +12,11 @@ import (
 
 // NexusUpload is our main structure.
 type NexusUpload struct {
-	service string
-	recurse bool
-	rootCmd *cobra.Command // rootCmd will hold our Cobra command.
+	username string
+	password string
+	service  string
+	recurse  bool
+	rootCmd  *cobra.Command // rootCmd will hold our Cobra command.
 }
 
 // Execute is a wrapper around Cobra's Execute method.
@@ -48,16 +50,23 @@ func (n *NexusUpload) run(cmd *cobra.Command, args []string) error {
 			return err
 		}
 
-		// Resolving configuration for given service
-		resolve, err := config.Resolve("nexus", n.service)
-		if err != nil {
-			log.Println("Error resolving config:", err)
-			return err
-		}
+		var username, password string
+		// if n.username and n.password is not null
+		if n.username != "" && n.password != "" {
+			username = n.username
+			password = n.password
+		} else {
+			// Resolving configuration for given service
+			resolve, err := config.Resolve("nexus", n.service)
+			if err != nil {
+				log.Println("Error resolving config:", err)
+				return err
+			}
 
-		// Extracting username and password from configuration
-		username := resolve["username"]
-		password := resolve["password"]
+			// Extracting username and password from configuration
+			username = resolve["username"]
+			password = resolve["password"]
+		}
 
 		// Source and destination paths from command arguments
 		src := args[0]
@@ -105,6 +114,8 @@ func NewCmd() *NexusUpload {
 
 	// Adding flags to our command
 	rootCmd.Flags().StringVarP(&cmd.service, "service", "s", "nexus", "Service")
+	rootCmd.Flags().StringVarP(&cmd.username, "username", "u", "", "Username")
+	rootCmd.Flags().StringVarP(&cmd.password, "password", "p", "", "Password")
 	rootCmd.Flags().BoolVarP(&cmd.recurse, "recurse", "r", false, "Recurse into directories")
 	cmd.rootCmd = rootCmd
 

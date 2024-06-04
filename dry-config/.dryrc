@@ -1,0 +1,7 @@
+[nexus one]
+username=one
+password=secret
+
+[nexus two]
+$username=$nexus_username
+$password=$nexus_password
