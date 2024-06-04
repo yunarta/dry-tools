@@ -4,42 +4,58 @@ on: [ push ]
 
 jobs:
   build:
-    runs-on: oraclelinux-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-#      - name: Cache Go modules
-#        uses: actions/cache@v3
-#        with:
-#          path: ~/go
-#          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-#          restore-keys: ${{ runner.os }}-go-
-#
-#      - name: Set up Go
-#        uses: actions/setup-go@v3
-#        with:
-#          go-version: 1.21
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: ~/go
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: ${{ runner.os }}-go-
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.21
+
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@01dd5d3ca463c7f10f7f4f7b4f177225ac661ee4 # v6.1.0
+        id: import_gpg
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          args: release --clean --snapshot
+        env:
+          # GitHub sets the GITHUB_TOKEN secret automatically.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
 #
 #      - name: Install GoReleaser
 #        uses: goreleaser/goreleaser-action@v5
 #        with:
 #          install-only: true
-
+#
+##      - name: Build
+##        run: |
+##          cd dry && goreleaser release --skip=publish --snapshot
+#
 #      - name: Build
 #        run: |
-#          cd dry && goreleaser release --skip=publish --snapshot
-
-      - name: Build
-        run: |
-          set -x
-          goreleaser release --skip=publish --snapshot
-          ls -ltR dist
-
-      - name: Test
-        run: |
-          set -x
-          mkdir test
-          cd test
-          unzip ../dist/dry-tools_0.0.0-SNAPSHOT-aa7945a_linux_amd64.zip
-          ls -ltR
+#          set -x
+#          goreleaser release --skip=publish --snapshot
+#          ls -ltR dist
+#
+#      - name: Test
+#        run: |
+#          set -x
+#          mkdir test
+#          cd test
+#          unzip ../dist/dry-tools_0.0.0-SNAPSHOT-aa7945a_linux_amd64.zip
+          
