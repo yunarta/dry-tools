@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/yunarta/dry-tools/dry-nexus-download/nexus_download"
 	"os"
 )
 

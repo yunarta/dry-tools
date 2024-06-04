@@ -2,6 +2,7 @@ package dry_config
 
 import (
 	"fmt"
+	"gopkg.in/ini.v1"
 	"os"
 	"strings"
 )

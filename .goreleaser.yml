@@ -1,12 +1,12 @@
 # Visit https://goreleaser.com for documentation on how to customize this
 # behavior.
-project_name: dry-nexus-download
 before:
   hooks:
     # this is just an example and not a requirement for provider building/publishing
-    - go mod tidy
+    - go work sync
 builds:
-  - env:
+  - &build-params
+    env:
       # goreleaser does not work with CGO, it could also complicate
       # usage by users in CI/CD systems like Terraform Cloud where
       # they are unable to install libraries.
@@ -19,21 +19,49 @@ builds:
       - '-s -w -X main.version={{.Version}} -X main.commit={{.Commit}}'
     goos:
 #      - freebsd
-#      - windows
+      - windows
       - linux
-#      - darwin
+      - darwin
     goarch:
       - amd64
 #      - '386'
 #      - arm
-#      - arm64
+      - arm64
     ignore:
       - goos: darwin
         goarch: '386'
-    binary: '{{ .ProjectName }}'
+
+    id: dry
+    binary: dry
+    dir: dry
+
+  - <<: *build-params
+    id: dry-nexus-download
+    binary: dry-nexus-download
+    dir: dry-nexus-download
+
+  - <<: *build-params
+    id: dry-nexus-upload
+    binary: dry-nexus-upload
+    dir: dry-nexus-upload
+
+
 archives:
   - format: zip
     name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+signs:
+  - artifacts: checksum
+    args:
+      # if you are using this in a GitHub action or some other automated pipeline, you
+      # need to pass the batch flag to indicate its not interactive.
+      - "--batch"
+      - "--local-user"
+      - "{{ .Env.GPG_FINGERPRINT }}" # set this environment variable for your signing key
+      - "--output"
+      - "${signature}"
+      - "--detach-sign"
+      - "${artifact}"
+      -
 #checksum:
 #  extra_files:
 #    - glob: 'terraform-registry-manifest.json'

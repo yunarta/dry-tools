@@ -3,7 +3,7 @@ package nexus_download
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	dry_config "github.com/yunarta/dry-tools/dry/dry-config"
+	dry_config "github.com/yunarta/dry-tools/dry-config"
 	"log"
 	"net/url"
 	"os"
